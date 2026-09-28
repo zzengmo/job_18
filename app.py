@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file
 from scrapper import search_incruit
+from file import save_to_csv
 
 app = Flask(__name__)
 
@@ -18,7 +19,12 @@ def search():
   jobs = search_incruit(keyword)
   return render_template("search.html", keyword = keyword, jobs = enumerate(jobs))
 
-
+@app.route("/file")
+def file():
+  keyword = request.args.get("keyword")
+  jobs = search_incruit(keyword)
+  save_to_csv(jobs)
+  return send_file("downloads.csv", as_attachment=True)
 
 if __name__ == "__main__":
   app.run(debug=True)
